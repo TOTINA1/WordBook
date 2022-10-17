@@ -3,14 +3,27 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+
+// import Resource from './resource'
+
 import './style/index.css'
+import './assets/font/iconfont.css'
+// import Vant from 'vant'
+// import 'vant/lib/index.css'
+
+// 注册使用vant组件库
+// Vue.use(Vant)
+
+import api from './api/api'
 
 Vue.config.productionTip = false
+Vue.prototype.$api = api
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  // resource: Resource,
   components: { App },
   template: '<App/>'
 })
