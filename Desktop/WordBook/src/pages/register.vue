@@ -14,29 +14,29 @@
             <div class="imgwarpper">
                 <img src="" alt="">
             </div>
-            <input class="input" type="password" placeholder="请输入6-16位密码" v-model="pwd">
+            <input class="input" type="password" placeholder="请输入6-16位密码" v-model="password">
         </div>
 
         <div class="txtWarpper">
             <div class="imgwarpper">
                 <img src="" alt="">
             </div>
-            <input class="input" type="password" placeholder="请再次输入密码" v-model="pwd">
+            <input class="input" type="password" placeholder="请再次输入密码" v-model="pwdAgain">
         </div>
 
         <div class="txtWarpper">
             <div class="imgwarpper">
                 <img src="" alt="">
             </div>
-            <input class="input" type="text" placeholder="请输入验证码" v-model="code">
-            <button class="btnCode" @click="sendCode">{{isRun?`${runTime}s后重新获取`:`获取验证码`}}</button>
+            <!-- <input class="input" type="text" placeholder="请输入验证码" v-model="code">
+            <button class="btnCode" @click="sendCode">{{isRun?`${runTime}s后重新获取`:`获取验证码`}}</button> -->
             <img src="" alt="">
         </div>
 
         <button class="button4" @click="register">注册</button>
 
         <div class="desc">
-            <span>已有账号？马上登录</span>
+            <span @click="loginPush">已有账号？马上登录</span>
         </div>
     </div>
   </div>
@@ -47,7 +47,8 @@ export default {
   data () {
     return {
       phone: '',
-      pwd: '',
+      password: '',
+      pwdAgain: '',
       code: '',
       //   倒计时
       isRun: false,
@@ -55,42 +56,98 @@ export default {
     }
   },
   methods: {
-    async sendCode () {
-      //   发送验证码
+    loginPush () {
+      this.$router.push('/login')
+    },
+    // async sendCode () {
+    //   //   发送验证码
+    //   if (!/^1\d{10}$/.test(this.phone)) {
+    //     window.alert('请确保手机号正确~~')
+    //   }
+    //   if (this.pwd === this.pwdAgain) {
+    //     alert('两次密码不一致，请重新输入~~')
+    //     this.isRun = false
+    //   }
+    //   //   验证手机号是否被注册
+    //   await this.$api.personal.phone(this.phone).then((res) => {
+    //     // alert(res.data.msg)
+    //     // 手机号已经存在，给这个手机号发送验证码
+    //     this.$api.personal.codeReg({
+    //       phone: this.phone,
+    //       password: this.password
+    //     }).then((res) => {
+    //       console.log('查询手机号响应信息:' + '验证码发送成功')
+    //       // 开启倒计时
+    //       //   if (this.isRun) return
+    //       this.isRun = true
+    //       this.autoTime = setInterval(() => {
+    //         if (this.runTime === 0) {
+    //           this.runTime = 30
+    //           this.isRun = false
+    //           clearInterval(this.autoTime)
+    //           return
+    //         }
+    //         this.runTime--
+    //       }, 1000)
+    //     })
+    //   }).catch((_err) => {
+    //     alert('手机号已注册，请选择验证码或密码登录~~')
+    //   })
+
+    //   // 验证码
+    //   //    验证手机号是否被注册
+    //   //  let data = await this.$api.personal.phone(this.phone)
+    //   // if(parseInt(data.code) == 0){
+    //   //     if(parseInt(data.code) == 0){
+    //   //         window.alert('手机号已被注册，请选择登录~~')
+    //   //         return
+    //   //     }
+
+    //   //      通知服务器发送验证码
+    //   //     data = await this.$api.personal.code(this.phone)
+    //   //     if(parseInt(data.code) == 1){
+    //   //         window.alert('当前网络繁忙，请稍后再试~~')
+    //   //         return
+    //   //     }
+    //   // }
+
+    //   // 开启倒计时
+    //   //   if (this.isRun) return
+    //   this.isRun = true
+    //   this.autoTime = setInterval(() => {
+    //     if (this.runTime === 0) {
+    //       this.runTime = 30
+    //       this.isRun = false
+    //       clearInterval(this.autoTime)
+    //       return
+    //     }
+    //     this.runTime--
+    //   }, 1000)
+    // },
+    async register () {
+      if (this.password === '' || this.phone === '') {
+        alert('手机号和密码不能为空')
+        return
+      }
       if (!/^1\d{10}$/.test(this.phone)) {
         window.alert('请确保手机号正确~~')
+        return
       }
-      // 验证码
-      //    验证手机号是否被注册
-      //  let data = await this.$api.personal.phone(this.phone)
-      // if(parseInt(data.code) == 0){
-      //     if(parseInt(data.code) == 0){
-      //         window.alert('手机号已被注册，请选择登录~~')
-      //         return
-      //     }
+      if (this.password !== this.pwdAgain) {
+        alert('两次密码不一致，请重新输入~~')
+        return
+      }
+      await this.$api.personal.register({
+        phone: this.phone,
+        password: this.password
+      }).then((res) => {
+        alert(res.data.msg)
+        this.$router.push('/about')
+      })
+        .catch((_err) => {
+          alert('注册失败~~')
+        })
 
-      //      通知服务器发送验证码
-      //     data = await this.$api.personal.code(this.phone)
-      //     if(parseInt(data.code) == 1){
-      //         window.alert('当前网络繁忙，请稍后再试~~')
-      //         return
-      //     }
-      // }
-
-      // 开启倒计时
-      //   if (this.isRun) return
-      this.isRun = true
-      this.autoTime = setInterval(() => {
-        if (this.runTime === 0) {
-          this.runTime = 30
-          this.isRun = false
-          clearInterval(this.autoTime)
-          return
-        }
-        this.runTime--
-      }, 1000)
-    },
-    async register () {
     //   表单验证
     //   验证验证码的有效性
     //   let data = await this.$api.checkCode(this.phone, this.code)

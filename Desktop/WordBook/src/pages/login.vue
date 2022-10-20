@@ -9,14 +9,14 @@
                     <div class="imgwarpper">
                         <img src="" alt="">
                     </div>
-                    <input class="input" type="text" placeholder="请输入用户名">
+                    <input class="input" type="text" placeholder="请输入用户名" v-model="username">
                 </div>
 
                 <div class="txtWarpper">
                     <div class="imgwarpper">
                         <img src="" alt="">
                     </div>
-                    <input class="input" type="password" placeholder="请输入6-16位密码">
+                    <input class="input" type="password" placeholder="请输入6-16位密码" v-model="password">
                 </div>
 
                 <div class="txtWarpper">
@@ -40,14 +40,14 @@
                     <div class="imgwarpper">
                         <img src="" alt="">
                     </div>
-                    <input class="input" type="text" placeholder="请输入手机号" v-model="account">
+                    <input class="input" type="text" placeholder="请输入手机号" v-model="phone">
                 </div>
 
                 <div class="txtWarpper">
                     <div class="imgwarpper">
                         <img src="" alt="">
                     </div>
-                    <input class="input" type="text" placeholder="请输入验证码" v-model="pwd">
+                    <input class="input" type="text" placeholder="请输入验证码" v-model="code">
                     <button class="btnCode" @click="sendCode">{{isRun?`${runTime}s后重新获取`:`获取验证码`}}</button>
                 </div>
 
@@ -73,8 +73,10 @@ export default {
   data () {
     return {
       type: 2,
-      account: '',
-      pwd: '',
+      username: '',
+      password: '',
+      phone: '',
+      code: '',
       //   倒计时
       isRun: false,
       runTime: 30
@@ -88,40 +90,62 @@ export default {
     },
     async sendCode () {
       //   发送验证码
-      if (!/^1\d{10}$/.test(this.account)) {
+      if (!/^1\d{10}$/.test(this.phone)) {
         window.alert('请确保手机号正确~~')
+        return
       }
       // 验证码
-      //    验证手机号是否被注册
-      //  let data = await this.$api.personal.phone(this.account)
-      // if(parseInt(data.code) == 0){
-      //     if(parseInt(data.code) == 0){
-      //         window.alert('手机没有被注册，请先注册~~')
-      //         return
-      //     }
-
-      //      通知服务器发送验证码
-      //     data = await this.$api.personal.code(this.account)
-      //     if(parseInt(data.code) == 1){
-      //         window.alert('当前网络繁忙，请稍后再试~~')
-      //         return
-      //     }
-      // }
-
-      // 开启倒计时
-      //   if (this.isRun) return
-      this.isRun = true
-      this.autoTime = setInterval(() => {
-        if (this.runTime === 0) {
-          this.runTime = 30
-          this.isRun = false
-          clearInterval(this.autoTime)
-          return
-        }
-        this.runTime--
-      }, 1000)
+      //   验证手机号是否被注册
+      await this.$api.personal.phone(this.phone).then((res) => {
+        // alert('手机号未注册，请先注册~~')
+        // 手机号已经存在，给这个手机号发送验证码
+        this.$api.personal.code(this.phone).then((res) => {
+          console.log('查询手机号响应信息:' + '验证码发送成功')
+          // 开启倒计时
+          //   if (this.isRun) return
+          this.isRun = true
+          this.autoTime = setInterval(() => {
+            if (this.runTime === 0) {
+              this.runTime = 30
+              this.isRun = false
+              clearInterval(this.autoTime)
+              return
+            }
+            this.runTime--
+          }, 1000)
+        })
+      }).catch((err) => {
+        // alert('手机号未注册，请先注册~~')
+        alert(err.response.data.msg)
+      })
     },
     loginHandle () {
+      if (this.type === 1) {
+        // 用户名密码登录
+        this.$api.personal.loginUser({
+          username: this.username,
+          password: this.password
+        }).then((res) => {
+          alert(res.data.msg)
+          this.$router.push('/about')
+        })
+          .catch((err) => {
+            alert(err.response.data.msg)
+          })
+      }
+      if (this.type === 2) {
+        // 用户名密码登录
+        this.$api.personal.loginCode({
+          phone: this.phone,
+          code: this.code
+        }).then((res) => {
+          alert(res.data.msg)
+          this.$router.push('/about')
+        })
+          .catch((err) => {
+            alert(err.response.data.msg)
+          })
+      }
       // 分情况看type是1or2
       // 表单校验
       //   let data = await this.$api.checkCode(this.accout, this.pwd)
