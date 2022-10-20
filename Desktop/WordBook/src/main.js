@@ -3,11 +3,11 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import './assets/font/iconfont.css'
 
 // import Resource from './resource'
 
 import './style/index.css'
-import './assets/font/iconfont.css'
 // import Vant from 'vant'
 // import 'vant/lib/index.css'
 

@@ -4,11 +4,12 @@
         <img src="" alt="">
         <div>
             <div class="login-warp" v-if="type === 1">
-                <p>提示</p>
+                <p class="title">单词本登录</p>
                 <div class="txtWarpper">
                     <div class="imgwarpper">
                         <img src="" alt="">
                     </div>
+                    <!-- <i class=" iconfont icon-shouji2"></i> -->
                     <input class="input" type="text" placeholder="请输入用户名" v-model="username">
                 </div>
 
@@ -35,7 +36,7 @@
             </div>
 
             <div class="login-warp" v-if="type === 2">
-                <p>提示</p>
+                <p class="title">单词本登录</p>
                 <div class="txtWarpper">
                     <div class="imgwarpper">
                         <img src="" alt="">
@@ -60,7 +61,7 @@
             <button class="button4" @click="loginHandle">登录</button>
             <div class="desc">
                     <span @click="changeType">{{type===1?'短信验证码登录':'用户名密码登录'}}</span>
-                    <span>注册</span>
+                    <span @click="goReg">注册</span>
                 </div>
 
         </div>
@@ -96,9 +97,9 @@ export default {
       }
       // 验证码
       //   验证手机号是否被注册
-      await this.$api.personal.phone(this.phone).then((res) => {
-        // alert('手机号未注册，请先注册~~')
-        // 手机号已经存在，给这个手机号发送验证码
+      await this.$api.personal.phone({
+        phone: this.phone
+      }).then((res) => {
         this.$api.personal.code(this.phone).then((res) => {
           console.log('查询手机号响应信息:' + '验证码发送成功')
           // 开启倒计时
@@ -127,7 +128,7 @@ export default {
           password: this.password
         }).then((res) => {
           alert(res.data.msg)
-          this.$router.push('/about')
+          this.$router.push('/words')
         })
           .catch((err) => {
             alert(err.response.data.msg)
@@ -140,7 +141,7 @@ export default {
           code: this.code
         }).then((res) => {
           alert(res.data.msg)
-          this.$router.push('/about')
+          this.$router.push('/words')
         })
           .catch((err) => {
             alert(err.response.data.msg)
@@ -167,6 +168,9 @@ export default {
     //       this.$router.push('/')
     //     }
     //   })
+    },
+    goReg () {
+      this.$router.push('/register')
     }
   }
 }
@@ -238,5 +242,10 @@ span{
 }
 span:hover{
     color: #41b883;
+}
+.title{
+    padding-left: 23px;
+    margin-bottom: 10px;
+    color: #999;
 }
 </style>

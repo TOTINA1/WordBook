@@ -1,5 +1,7 @@
 import personal from './personal'
+import catgory from './catgory'
 const api = {
-  personal
+  personal,
+  catgory
 }
 export default api

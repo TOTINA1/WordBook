@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="login-warp">
-        <p>提示</p>
+        <p class="title">单词本注册</p>
 
         <div class="txtWarpper">
             <div class="imgwarpper">
@@ -250,5 +250,10 @@ span:hover{
   border-radius: 3px;
   height: 28px;
   line-height: 28px;
+}
+.title{
+    padding-left: 23px;
+    margin-bottom: 10px;
+    color: #999;
 }
 </style>

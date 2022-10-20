@@ -7,10 +7,8 @@ export default {
   loginCode (data) {
     return axios.post('/loginCode', data)
   },
-  phone (phone) {
-    return axios.post('/phone', {
-      phone
-    })
+  phone (data) {
+    return axios.get('/phone', data)
   },
   code (phone) {
     return axios.post('/code', {

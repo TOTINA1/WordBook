@@ -77,11 +77,12 @@ app.post('/loginCode', (req, res) => {
   })
 })
 // 查看手机号是否注册
-app.post('/phone', (req, res) => {
+app.get('/phone', (req, res) => {
   let sql = `select phone from user`
   console.log(req.body.phone)
   conMysql(sql).then(result => {
-    console.log(typeof result[0].phone + typeof req.body.phone)
+    console.log(result[0].phone)
+    console.log(req.body.phone)
     if (result[0].phone === req.body.phone) {
       let response = new Response(true, '手机号已被注册', 200, result)
       res.send(response)
@@ -146,15 +147,67 @@ app.post('/register', (req, res) => {
 //   })
 // })
 
-// 修改密码
-app.post('/updatePassword', (req, res) => {
-  let sql = `update user set password = '${req.body.newPassword}' where username = '${req.body.username}' and password = '${req.body.rePassword}'`
+// 获取所有单词信息并返回到前端
+app.get('/queryWord', (req, res) => {
+  let sql = `select * from words`
+  conMysql(sql).then(result => {
+    if (result.length > 0) {
+      let response = new Response(true, '查询成功', 200, result)
+      res.send(response)
+      console.log(result)
+    } else {
+      let response = new Response(false, '查询失败', 400)
+      // res.status(400).send(response)
+      res.send(response)
+    }
+  }).catch(_err => {
+    res.status(500).send('数据库连接出错!')
+  })
+})
+// 获取所有单词信息并返回到前端
+app.post('/updWord', (req, res) => {
+  console.log(typeof req.body.pronounce)
+  console.log(typeof req.body.description)
+  console.log(typeof req.body.word)
+  let sql = `update words set  pronounce= '${req.body.pronounce}',description='${req.body.description}' where word = '${req.body.word}'`
   conMysql(sql).then(result => {
     if (result.affectedRows === 1) {
       let response = new Response(true, '修改成功', 200, result)
       res.send(response)
     } else {
+      let response = new Response(false, '修改失败', 400)
+      res.send(response)
+    }
+  }).catch(_err => {
+    res.status(500).send('数据库连接出错!')
+  })
+})
+
+// 修改密码
+app.post('/changePwd', (req, res) => {
+  let sql = `update user set password = '${req.body.pwd}' where username = '${req.body.username}' and password = '${req.body.oldPwd}'`
+  conMysql(sql).then(result => {
+    if (result.affectedRows === 1) {
+      let response = new Response(true, '修改成功,请重新登录', 200, result)
+      res.send(response)
+    } else {
       let response = new Response(false, '修改失败,请稍后重试', 400)
+      res.status(400).send(response)
+    }
+  }).catch(_err => {
+    res.status(500).send('数据库连接出错!')
+  })
+})
+
+// 添加单词
+app.post('/addWord', (req, res) => {
+  let sql = `INSERT INTO words(word,pronounce,description) VALUES('${req.body.word}','${req.body.pronounce}','${req.body.description}')`
+  conMysql(sql).then(result => {
+    if (result.affectedRows === 1) {
+      let response = new Response(true, '添加成功', 200, result)
+      res.send(response)
+    } else {
+      let response = new Response(false, '添加失败，请重试~~', 400)
       res.status(400).send(response)
     }
   }).catch(_err => {
